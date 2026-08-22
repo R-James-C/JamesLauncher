@@ -12,6 +12,7 @@
    ============================================================ */
 const SONGS = [
   { title: "MUTT", artist: "Leon Thomas" },
+   { title: "Earrings", artist: "Malcolm Todd" },
 
   // { title: "SONG TITLE", artist: "ARTIST NAME" },
 ];
