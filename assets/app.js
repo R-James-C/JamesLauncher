@@ -40,28 +40,47 @@ function jlInitAppPage(config){
   const runView = document.getElementById('run-view');
   const launchBtn = document.getElementById('launch-btn');
   const exitBtn = document.getElementById('exit-btn');
+  const frameWrap = document.getElementById('frame-wrap');
+  const fallback = document.getElementById('run-fallback');
+  const tryEmbedBtn = document.getElementById('fb-try-embed-btn');
+  const openBtn = document.getElementById('fb-open-btn');
+
+  function resetRunView(){
+    // Always start on the fallback card — never show a raw blocked iframe by surprise.
+    if(fallback) fallback.style.display = 'flex';
+    const existingFrame = document.getElementById('run-iframe');
+    if(existingFrame) existingFrame.remove();
+  }
+
+  function mountIframe(){
+    if(fallback) fallback.style.display = 'none';
+    let iframe = document.getElementById('run-iframe');
+    if(!iframe){
+      iframe = document.createElement('iframe');
+      iframe.id = 'run-iframe';
+      iframe.setAttribute('allow', 'autoplay; fullscreen; gamepad; xr-spatial-tracking');
+      iframe.setAttribute('allowfullscreen', '');
+      iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-pointer-lock');
+      iframe.src = config.url;
+      frameWrap.appendChild(iframe);
+    }
+  }
+
+  function markUsed(){
+    try{
+      const stamp = new Date().toISOString().slice(0,10);
+      localStorage.setItem('jl_lastused_' + config.appId, stamp);
+      const label = document.getElementById('last-used-label');
+      if(label) label.textContent = 'Last used ' + stamp;
+    }catch(e){}
+  }
 
   function enterRun(){
     jlPlayLaunchSequence(() => {
       detailView.style.display = 'none';
       runView.style.display = 'grid';
-      const frameWrap = document.getElementById('frame-wrap');
-      let iframe = document.getElementById('run-iframe');
-      if(!iframe){
-        iframe = document.createElement('iframe');
-        iframe.id = 'run-iframe';
-        iframe.setAttribute('allow', 'autoplay; fullscreen; gamepad; xr-spatial-tracking');
-        iframe.setAttribute('allowfullscreen', '');
-        iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-pointer-lock');
-        iframe.src = config.url;
-        frameWrap.prepend(iframe);
-      }
-      try{
-        const stamp = new Date().toISOString().slice(0,10);
-        localStorage.setItem('jl_lastused_' + config.appId, stamp);
-        const label = document.getElementById('last-used-label');
-        if(label) label.textContent = 'Last used ' + stamp;
-      }catch(e){}
+      resetRunView();
+      markUsed();
     });
   }
 
@@ -72,22 +91,22 @@ function jlInitAppPage(config){
       detailView.style.display = 'block';
     });
   }
+  if(openBtn){
+    openBtn.addEventListener('click', () => window.open(config.url, '_blank', 'noopener'));
+  }
+  if(tryEmbedBtn){
+    tryEmbedBtn.addEventListener('click', mountIframe);
+  }
 
   const fsBtn = document.getElementById('fullscreen-btn');
   if(fsBtn){
     fsBtn.addEventListener('click', () => {
-      const wrap = document.getElementById('frame-wrap');
       if(document.fullscreenElement){
         document.exitFullscreen();
-      }else if(wrap.requestFullscreen){
-        wrap.requestFullscreen().catch(() => {});
+      }else if(frameWrap.requestFullscreen){
+        frameWrap.requestFullscreen().catch(() => {});
       }
     });
-  }
-
-  const openTab = document.getElementById('open-tab-link');
-  if(openTab){
-    openTab.addEventListener('click', () => window.open(config.url, '_blank', 'noopener'));
   }
 
   const volSlider = document.getElementById('volume-slider');
