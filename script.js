@@ -67,6 +67,10 @@ const bigPlayBtn = document.getElementById('bigPlayBtn');
 const customColorInput = document.getElementById('customColorInput');
 const customDot = document.getElementById('customDot');
 const navHome = document.getElementById('navHome');
+const playlistModalOverlay = document.getElementById('playlistModalOverlay');
+const playlistModalInput = document.getElementById('playlistModalInput');
+const playlistModalCancel = document.getElementById('playlistModalCancel');
+const playlistModalCreate = document.getElementById('playlistModalCreate');
 
 const ICON_PLAY = '<path d="M8 5v14l11-7z"/>';
 const ICON_PAUSE = '<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>';
@@ -142,12 +146,47 @@ function createPlaylist(name){
   return pl;
 }
 
-function createPlaylistPrompt(){
-  const name = prompt('Playlist name:');
-  if(!name || !name.trim()) return;
-  const pl = createPlaylist(name.trim());
+/* ---------- custom "new playlist" modal (replaces prompt()) ---------- */
+let pendingSongForNewPlaylist = null; // set when opened from a track's "add to playlist" menu
+
+function openPlaylistModal(songIndexToAdd){
+  pendingSongForNewPlaylist = (typeof songIndexToAdd === 'number') ? songIndexToAdd : null;
+  playlistModalInput.value = '';
+  playlistModalOverlay.classList.add('visible');
+  setTimeout(() => playlistModalInput.focus(), 60);
+}
+
+function closePlaylistModal(){
+  playlistModalOverlay.classList.remove('visible');
+  pendingSongForNewPlaylist = null;
+}
+
+function confirmPlaylistModal(){
+  const name = playlistModalInput.value.trim();
+  if(!name){ playlistModalInput.focus(); return; }
+  const pl = createPlaylist(name);
+  if(pendingSongForNewPlaylist !== null){
+    pl.indices.push(pendingSongForNewPlaylist);
+    savePlaylists();
+    renderPlaylistNav();
+  }
+  closePlaylistModal();
   showPlaylist(pl.id);
 }
+
+playlistModalCancel.addEventListener('click', closePlaylistModal);
+playlistModalCreate.addEventListener('click', confirmPlaylistModal);
+playlistModalOverlay.addEventListener('click', (e) => {
+  if(e.target === playlistModalOverlay) closePlaylistModal();
+});
+playlistModalInput.addEventListener('keydown', (e) => {
+  if(e.key === 'Enter') confirmPlaylistModal();
+});
+document.addEventListener('keydown', (e) => {
+  if(e.key !== 'Escape') return;
+  if(playlistModalOverlay.classList.contains('visible')) closePlaylistModal();
+  closeTrackMenu();
+});
 
 function deletePlaylist(id, evt){
   if(evt) evt.stopPropagation();
@@ -199,12 +238,11 @@ function renderPlaylistNav(){
   });
 }
 
-/* ---------- track "add to playlist" popover ---------- */
+/* ---------- custom "add to playlist" popover (kebab click OR right-click) ---------- */
 function openTrackMenu(evt, songIndex){
+  evt.preventDefault();
   evt.stopPropagation();
   closeTrackMenu();
-  const btn = evt.currentTarget;
-  const rect = btn.getBoundingClientRect();
 
   const itemsHtml = playlists.length
     ? playlists.map(p => `
@@ -226,21 +264,26 @@ function openTrackMenu(evt, songIndex){
   `;
   document.body.appendChild(menu);
 
+  // Position near the cursor/button, clamped to stay on-screen — works for
+  // both the kebab-button click and a right-click anywhere on the row.
   const menuRect = menu.getBoundingClientRect();
-  let top = rect.bottom + 4;
-  let left = rect.right - menuRect.width;
+  let left = evt.clientX;
+  let top = evt.clientY;
+  if(left + menuRect.width > window.innerWidth - 8) left = window.innerWidth - menuRect.width - 8;
+  if(top + menuRect.height > window.innerHeight - 8) top = window.innerHeight - menuRect.height - 8;
   if(left < 8) left = 8;
-  if(top + menuRect.height > window.innerHeight - 8) top = rect.top - menuRect.height - 4;
-  menu.style.top = top + 'px';
+  if(top < 8) top = 8;
   menu.style.left = left + 'px';
+  menu.style.top = top + 'px';
 
   menu.querySelectorAll('input[type="checkbox"]').forEach(cb => {
     cb.addEventListener('change', () => toggleSongInPlaylist(cb.dataset.pl, songIndex));
   });
-  menu.querySelector('#trackMenuNewBtn').addEventListener('click', () => {
+  menu.querySelector('#trackMenuNewBtn').addEventListener('click', (btnEvt) => {
     const nameInput = menu.querySelector('#trackMenuNewName');
     const name = nameInput.value.trim();
     if(!name) return;
+    btnEvt.currentTarget.disabled = true; // prevent double-submit creating dup playlists
     const pl = createPlaylist(name);
     pl.indices.push(songIndex);
     savePlaylists();
@@ -280,6 +323,20 @@ function showLibrary(){
 function showPlaylist(id){
   const pl = playlists.find(p => p.id === id);
   if(!pl) return;
+
+  // Defensively de-dupe and drop any out-of-range indices — this is what
+  // caused the same song to appear (and play) twice in a row.
+  const seen = new Set();
+  const cleaned = pl.indices.filter(i => {
+    if(i < 0 || i >= SONGS.length || seen.has(i)) return false;
+    seen.add(i);
+    return true;
+  });
+  if(cleaned.length !== pl.indices.length){
+    pl.indices = cleaned;
+    savePlaylists();
+  }
+
   activeView = { type: 'playlist', id };
   activeQueue = pl.indices.slice();
   navHome.classList.remove('active');
@@ -316,6 +373,7 @@ function renderLibrary(){
     const item = document.createElement('div');
     item.className = 'library-item' + (i === current ? ' active' : '');
     item.onclick = () => { showLibrary(); loadTrack(i, true); };
+    item.addEventListener('contextmenu', (e) => openTrackMenu(e, i));
     item.innerHTML = `
       <div class="library-thumb"><img src="${song.cover}" onerror="this.src='${FALLBACK_COVER}'"></div>
       <div class="library-text">
@@ -340,6 +398,7 @@ function renderList(){
     const row = document.createElement('div');
     row.className = 'track-row' + (songIndex === current ? ' active' : '');
     row.onclick = () => loadTrack(songIndex, true);
+    row.addEventListener('contextmenu', (e) => openTrackMenu(e, songIndex));
     row.innerHTML = `
       <div class="track-index">
         <span class="num">${pos + 1}</span>
@@ -389,8 +448,21 @@ function renderHeader(){
    ============================================================ */
 function loadTrack(i, autoplay){
   if(SONGS.length === 0) return;
-  current = ((i % SONGS.length) + SONGS.length) % SONGS.length;
-  const song = SONGS[current];
+  const idx = ((i % SONGS.length) + SONGS.length) % SONGS.length;
+  const song = SONGS[idx];
+
+  // If this song is already loaded (e.g. it appears in both the library and
+  // a playlist and you click it again), don't reload the audio source —
+  // that was restarting/re-triggering playback and made it sound like the
+  // same song was playing twice. Just resume it instead.
+  if(idx === current && audio.src && audio.src.indexOf(song.src) !== -1){
+    if(autoplay && audio.paused) audio.play().catch(()=>{});
+    renderList();
+    renderLibrary();
+    return;
+  }
+
+  current = idx;
   audio.src = song.src;
   pbCover.src = song.cover;
   pbCover.onerror = () => pbCover.src = FALLBACK_COVER;
