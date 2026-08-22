@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>sneak. — local play</title>
+<title>sneak. — local player</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
@@ -27,7 +27,7 @@
     <div class="nav-section playlists-section">
       <div class="nav-label">Playlists</div>
       <div id="playlistNavList" class="playlist-nav-list"></div>
-      <div class="new-playlist-item" onclick="createPlaylistPrompt()">+ New playlist</div>
+      <div class="new-playlist-item" onclick="openPlaylistModal()">+ New playlist</div>
     </div>
 
     <div class="nav-section theme-section">
@@ -121,6 +121,21 @@
   </footer>
 
   <div class="status" id="status"></div>
+
+  <div class="modal-overlay" id="playlistModalOverlay">
+    <div class="modal">
+      <div class="modal-icon">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M4 6h11M4 12h11M4 18h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="19" cy="15" r="4" stroke="currentColor" stroke-width="2"/><path d="M19 13.5v3M17.5 15h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </div>
+      <div class="modal-title">New playlist</div>
+      <div class="modal-subtitle">Give it a name — you can add songs after.</div>
+      <input type="text" id="playlistModalInput" class="modal-input" placeholder="e.g. Late Night Drive" maxlength="60">
+      <div class="modal-actions">
+        <button class="modal-btn modal-btn-cancel" id="playlistModalCancel">Cancel</button>
+        <button class="modal-btn modal-btn-create" id="playlistModalCreate">Create</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <audio id="audio" preload="metadata"></audio>
