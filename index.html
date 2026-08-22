@@ -15,11 +15,16 @@
     <div class="logo"><span class="dot"></span>sneak.</div>
 
     <div class="nav-section">
-      <div class="nav-label">Menu</div>
-      <div class="nav-item active">Library</div>
+      <div class="nav-item active">Home</div>
+      <div class="nav-item">Search</div>
     </div>
 
-    <div class="nav-section">
+    <div class="nav-section library-section">
+      <div class="nav-label">Your library</div>
+      <div id="libraryList" class="library-list"></div>
+    </div>
+
+    <div class="nav-section theme-section">
       <div class="nav-label">Skin</div>
       <div class="theme-row">
         <button class="theme-swatch selected" data-theme="blue" onclick="setTheme('blue')">
@@ -42,51 +47,71 @@
     </div>
   </aside>
 
-  <main class="main">
-    <section class="hero" id="hero">
-      <div class="cover-wrap"><img id="heroCover" src="" alt=""></div>
-      <div class="hero-info">
-        <div class="hero-eyebrow">Now playing</div>
-        <div class="hero-title" id="heroTitle">—</div>
-        <div class="hero-artist" id="heroArtist">—</div>
-      </div>
-    </section>
+  <div class="main-scroll">
+    <main class="content">
+      <section class="playlist-header">
+        <div class="playlist-cover"><img id="headerCover" src="" alt=""></div>
+        <div class="playlist-info">
+          <div class="eyebrow">Playlist</div>
+          <h1 id="playlistTitle">Your Music</h1>
+          <div class="playlist-meta" id="playlistMeta">0 songs</div>
+        </div>
+      </section>
 
-    <section class="player">
+      <section class="action-row">
+        <button class="btn-play-large" id="bigPlayBtn" title="Play">
+          <svg id="bigPlayIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+      </section>
+
+      <section class="track-table">
+        <div class="track-table-head">
+          <span class="col-index">#</span>
+          <span class="col-title">Title</span>
+          <span class="col-artist">Artist</span>
+          <span class="col-dur">Time</span>
+        </div>
+        <div id="trackList"></div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="player-bar">
+    <div class="pb-track">
+      <div class="pb-thumb"><img id="pbCover" src="" alt=""></div>
+      <div class="pb-meta">
+        <div class="pb-title" id="pbTitle">—</div>
+        <div class="pb-artist" id="pbArtist">—</div>
+      </div>
+      <div class="eq" id="eq"><span></span><span></span><span></span></div>
+    </div>
+
+    <div class="pb-center">
+      <div class="transport">
+        <button class="btn-icon" id="prevBtn" title="Previous">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l10-6v12z" transform="scale(-1,1) translate(-24,0)"/></svg>
+        </button>
+        <button class="btn-play" id="playBtn" title="Play">
+          <svg id="playIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+        <button class="btn-icon" id="nextBtn" title="Next">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l10-6v12z"/></svg>
+        </button>
+      </div>
       <div class="progress-row">
         <span class="time" id="curTime">0:00</span>
         <div class="bar" id="bar"><div class="bar-fill" id="barFill"></div></div>
         <span class="time" id="durTime">0:00</span>
       </div>
+    </div>
 
-      <div class="controls-row">
-        <div class="transport">
-          <button class="btn-icon" id="prevBtn" title="Previous">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l10-6v12z" transform="scale(-1,1) translate(-24,0)"/></svg>
-          </button>
-          <button class="btn-play" id="playBtn" title="Play">
-            <svg id="playIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-          </button>
-          <button class="btn-icon" id="nextBtn" title="Next">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l10-6v12z"/></svg>
-          </button>
-          <div class="eq" id="eq"><span></span><span></span><span></span></div>
-        </div>
+    <div class="pb-right">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 10v4h4l5 5V5L7 10H3zm13.5 2A4.5 4.5 0 0 0 14 7.97v8.05A4.5 4.5 0 0 0 16.5 12z"/></svg>
+      <input type="range" id="volume" min="0" max="1" step="0.01" value="0.8">
+    </div>
+  </footer>
 
-        <div class="volume-row">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 10v4h4l5 5V5L7 10H3zm13.5 2A4.5 4.5 0 0 0 14 7.97v8.05A4.5 4.5 0 0 0 16.5 12z"/></svg>
-          <input type="range" id="volume" min="0" max="1" step="0.01" value="0.8">
-        </div>
-      </div>
-
-      <div class="status" id="status"></div>
-    </section>
-
-    <section>
-      <div class="playlist-header">Your library</div>
-      <div id="trackList" style="margin-top:8px;"></div>
-    </section>
-  </main>
+  <div class="status" id="status"></div>
 </div>
 
 <audio id="audio" preload="metadata"></audio>
