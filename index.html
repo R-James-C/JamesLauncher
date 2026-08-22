@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="blue">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>sneak. — local player</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="app">
+  <aside class="sidebar">
+    <div class="logo"><span class="dot"></span>sneak.</div>
+
+    <div class="nav-section">
+      <div class="nav-label">Menu</div>
+      <div class="nav-item active">Library</div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Skin</div>
+      <div class="theme-row">
+        <button class="theme-swatch selected" data-theme="blue" onclick="setTheme('blue')">
+          <span class="swatch-dots">
+            <span style="background:#0b0f14"></span>
+            <span style="background:#8fa0ab"></span>
+            <span style="background:#2f80ed"></span>
+          </span>
+          <span class="label">Blue</span>
+        </button>
+        <button class="theme-swatch" data-theme="orange" onclick="setTheme('orange')">
+          <span class="swatch-dots">
+            <span style="background:#0d0d0d"></span>
+            <span style="background:#ffffff"></span>
+            <span style="background:#ff7a29"></span>
+          </span>
+          <span class="label">Orange</span>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <section class="hero" id="hero">
+      <div class="cover-wrap"><img id="heroCover" src="" alt=""></div>
+      <div class="hero-info">
+        <div class="hero-eyebrow">Now playing</div>
+        <div class="hero-title" id="heroTitle">—</div>
+        <div class="hero-artist" id="heroArtist">—</div>
+      </div>
+    </section>
+
+    <section class="player">
+      <div class="progress-row">
+        <span class="time" id="curTime">0:00</span>
+        <div class="bar" id="bar"><div class="bar-fill" id="barFill"></div></div>
+        <span class="time" id="durTime">0:00</span>
+      </div>
+
+      <div class="controls-row">
+        <div class="transport">
+          <button class="btn-icon" id="prevBtn" title="Previous">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l10-6v12z" transform="scale(-1,1) translate(-24,0)"/></svg>
+          </button>
+          <button class="btn-play" id="playBtn" title="Play">
+            <svg id="playIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          </button>
+          <button class="btn-icon" id="nextBtn" title="Next">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l10-6v12z"/></svg>
+          </button>
+          <div class="eq" id="eq"><span></span><span></span><span></span></div>
+        </div>
+
+        <div class="volume-row">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 10v4h4l5 5V5L7 10H3zm13.5 2A4.5 4.5 0 0 0 14 7.97v8.05A4.5 4.5 0 0 0 16.5 12z"/></svg>
+          <input type="range" id="volume" min="0" max="1" step="0.01" value="0.8">
+        </div>
+      </div>
+
+      <div class="status" id="status"></div>
+    </section>
+
+    <section>
+      <div class="playlist-header">Your library</div>
+      <div id="trackList" style="margin-top:8px;"></div>
+    </section>
+  </main>
+</div>
+
+<audio id="audio" preload="metadata"></audio>
+
+<script src="script.js"></script>
+</body>
+</html>
