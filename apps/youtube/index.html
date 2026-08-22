@@ -75,19 +75,27 @@
         <div class="nav-link" id="exit-btn">&larr; Exit</div>
       </div>
 
-      <div class="run-frame-wrap" id="frame-wrap"></div>
+      <div class="run-frame-wrap" id="frame-wrap">
+        <div class="run-fallback" id="run-fallback">
+          <div class="fb-icon" style="background:#6b7484;">YT</div>
+          <div class="fb-title">Continue to Youtube</div>
+          <p>Most school platforms block being shown inside another site, for security. Continue in a new tab — or try loading it inline (not guaranteed to work).</p>
+          <div class="fb-actions">
+            <button class="btn-launch" id="fb-open-btn">Open Youtube &#8599;</button>
+          </div>
+          <span class="fb-try-link" id="fb-try-embed-btn">Try loading it inline instead</span>
+        </div>
+      </div>
 
       <div class="run-toolbar">
         <div style="display:flex;gap:10px;align-items:center;">
           <div class="tool-btn" id="fullscreen-btn">&#9974; Fullscreen</div>
-          <span class="open-tab-link" id="open-tab-link">Open in new tab &#8599;</span>
         </div>
         <div class="volume-wrap">
           <span class="volume-label" id="volume-label">&#128266; 70%</span>
           <input type="range" id="volume-slider" min="0" max="100" value="70">
         </div>
       </div>
-      <div class="run-note">If nothing appears above, Youtube blocks embedding for security — use "Open in new tab" instead.</div>
     </div>
 
     <div class="rail rail-right">
