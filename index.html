@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>James Launcher</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app-shell">
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="mark">JL</div>
+      <div>
+        James Launcher
+        <span class="brand-sub">School App Dock</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="layout">
+    <div class="rail">
+      <div class="search-box">
+        <span class="search-icon">&#9906;</span>
+        <input id="search-input" type="text" placeholder="Search apps&hellip;">
+      </div>
+      <div>
+        <div class="rail-label">Library</div>
+        <div class="nav-list">
+          <div class="nav-item active">All Apps</div>
+        </div>
+      </div>
+      <div class="account-box">
+        <div class="avatar">JL</div>
+        <div>
+          <div class="name">Guest</div>
+          <div class="role">Local session</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="section-heading">
+        <h1>All Apps</h1>
+        <span class="count-tag" id="count-tag">7 items</span>
+      </div>
+
+      <div class="grid" id="app-grid">
+        <a class="tile" href="apps/skyward/" data-name="Skyward" data-cat="School Portal">
+          <div class="tile-art" style="background:#171b23;">SK</div>
+          <div class="tile-name">Skyward</div>
+          <div class="tile-cat">School Portal</div>
+        </a>
+
+        <a class="tile" href="apps/classlink/" data-name="ClassLink" data-cat="Single Sign-On">
+          <div class="tile-art" style="background:#2f6fed;">CL</div>
+          <div class="tile-name">Classlink</div>
+          <div class="tile-cat">Single Sign-On</div>
+        </a>
+
+        <a class="tile" href="apps/google-classroom/" data-name="Google Classroom" data-cat="Classroom">
+          <div class="tile-art" style="background:#1f56c9;">GC</div>
+          <div class="tile-name">Google Classroom</div>
+          <div class="tile-cat">Classroom</div>
+        </a>
+
+        <a class="tile" href="apps/blooket/" data-name="Blooket" data-cat="Learning Game">
+          <div class="tile-art" style="background:#5b6474;">BL</div>
+          <div class="tile-name">Blooket</div>
+          <div class="tile-cat">Learning Game</div>
+        </a>
+
+        <a class="tile" href="apps/gimkit/" data-name="Gimkit" data-cat="Learning Game">
+          <div class="tile-art" style="background:#2c3444;">GK</div>
+          <div class="tile-name">Gim-Kit</div>
+          <div class="tile-cat">Learning Game</div>
+        </a>
+
+        <a class="tile" href="apps/kahoot/" data-name="Kahoot" data-cat="Learning Game">
+          <div class="tile-art" style="background:#3f7cf0;">K!</div>
+          <div class="tile-name">Kahoot</div>
+          <div class="tile-cat">Learning Game</div>
+        </a>
+
+        <a class="tile" href="apps/youtube/" data-name="Youtube" data-cat="Video">
+          <div class="tile-art" style="background:#6b7484;">YT</div>
+          <div class="tile-name">Youtube</div>
+          <div class="tile-cat">Video</div>
+        </a>
+      </div>
+
+      <div class="empty-state" id="empty-state" style="display:none;">
+        <div class="big">NO MATCHES</div>
+        <div>Try a different search.</div>
+      </div>
+    </div>
+
+    <div class="rail rail-right">
+      <div class="ad-slot">
+        <div class="tag">SPONSORED</div>
+        <div class="msg">Ad space<br>300 &times; 250</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const input = document.getElementById('search-input');
+  const grid = document.getElementById('app-grid');
+  const empty = document.getElementById('empty-state');
+  const count = document.getElementById('count-tag');
+  const tiles = Array.from(grid.querySelectorAll('.tile'));
+
+  input.addEventListener('input', () => {
+    const q = input.value.trim().toLowerCase();
+    let visible = 0;
+    tiles.forEach(t => {
+      const match = !q || t.dataset.name.toLowerCase().includes(q) || t.dataset.cat.toLowerCase().includes(q);
+      t.style.display = match ? '' : 'none';
+      if(match) visible++;
+    });
+    empty.style.display = visible === 0 ? 'flex' : 'none';
+    count.textContent = visible + (visible === 1 ? ' item' : ' items');
+  });
+</script>
+
+</body>
+</html>
