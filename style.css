@@ -259,12 +259,19 @@ a{color:inherit;text-decoration:none;}
   background:var(--white);color:var(--grey-dark);text-align:center;padding:24px;
 }
 .run-fallback .fb-icon{
-  width:64px;height:64px;border-radius:16px;
+  width:60px;height:60px;border-radius:16px;
   display:flex;align-items:center;justify-content:center;
-  font-family:var(--font-display);font-weight:700;font-size:26px;color:var(--white);
+  font-family:var(--font-display);font-weight:700;font-size:24px;color:var(--white);
 }
-.run-fallback p{font-size:13px;max-width:320px;line-height:1.6;margin:0;}
+.run-fallback .fb-title{font-family:var(--font-display);font-weight:700;font-size:17px;color:var(--black);}
+.run-fallback p{font-size:12.5px;max-width:320px;line-height:1.6;margin:0;color:var(--grey);}
 .run-fallback .btn-launch{padding:11px 22px;font-size:13px;}
+.run-fallback .fb-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center;}
+.fb-try-link{
+  font-family:var(--font-body);font-size:12px;font-weight:600;color:var(--grey);
+  cursor:pointer;text-decoration:underline;text-underline-offset:2px;
+}
+.fb-try-link:hover{color:var(--blue);}
 
 .run-toolbar{
   display:flex;align-items:center;justify-content:space-between;gap:16px;
