@@ -1,131 +1,96 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="blue">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>James Launcher</title>
+<title>sneak. — local player</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="app-shell">
 
-  <div class="topbar">
-    <div class="brand">
-      <div class="mark">JL</div>
-      <div>
-        James Launcher
-        <span class="brand-sub">School App Dock</span>
+<div id="app">
+  <aside class="sidebar">
+    <div class="logo"><span class="dot"></span>sneak.</div>
+
+    <div class="nav-section">
+      <div class="nav-label">Menu</div>
+      <div class="nav-item active">Library</div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Skin</div>
+      <div class="theme-row">
+        <button class="theme-swatch selected" data-theme="blue" onclick="setTheme('blue')">
+          <span class="swatch-dots">
+            <span style="background:#0b0f14"></span>
+            <span style="background:#8fa0ab"></span>
+            <span style="background:#2f80ed"></span>
+          </span>
+          <span class="label">Blue</span>
+        </button>
+        <button class="theme-swatch" data-theme="orange" onclick="setTheme('orange')">
+          <span class="swatch-dots">
+            <span style="background:#0d0d0d"></span>
+            <span style="background:#ffffff"></span>
+            <span style="background:#ff7a29"></span>
+          </span>
+          <span class="label">Orange</span>
+        </button>
       </div>
     </div>
-  </div>
+  </aside>
 
-  <div class="layout">
-    <div class="rail">
-      <div class="search-box">
-        <span class="search-icon">&#9906;</span>
-        <input id="search-input" type="text" placeholder="Search apps&hellip;">
+  <main class="main">
+    <section class="hero" id="hero">
+      <div class="cover-wrap"><img id="heroCover" src="" alt=""></div>
+      <div class="hero-info">
+        <div class="hero-eyebrow">Now playing</div>
+        <div class="hero-title" id="heroTitle">—</div>
+        <div class="hero-artist" id="heroArtist">—</div>
       </div>
-      <div>
-        <div class="rail-label">Library</div>
-        <div class="nav-list">
-          <div class="nav-item active">All Apps</div>
+    </section>
+
+    <section class="player">
+      <div class="progress-row">
+        <span class="time" id="curTime">0:00</span>
+        <div class="bar" id="bar"><div class="bar-fill" id="barFill"></div></div>
+        <span class="time" id="durTime">0:00</span>
+      </div>
+
+      <div class="controls-row">
+        <div class="transport">
+          <button class="btn-icon" id="prevBtn" title="Previous">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l10-6v12z" transform="scale(-1,1) translate(-24,0)"/></svg>
+          </button>
+          <button class="btn-play" id="playBtn" title="Play">
+            <svg id="playIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          </button>
+          <button class="btn-icon" id="nextBtn" title="Next">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l10-6v12z"/></svg>
+          </button>
+          <div class="eq" id="eq"><span></span><span></span><span></span></div>
+        </div>
+
+        <div class="volume-row">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 10v4h4l5 5V5L7 10H3zm13.5 2A4.5 4.5 0 0 0 14 7.97v8.05A4.5 4.5 0 0 0 16.5 12z"/></svg>
+          <input type="range" id="volume" min="0" max="1" step="0.01" value="0.8">
         </div>
       </div>
-      <div class="account-box">
-        <div class="avatar">JL</div>
-        <div>
-          <div class="name">Guest</div>
-          <div class="role">Local session</div>
-        </div>
-      </div>
-    </div>
 
-    <div class="main">
-      <div class="section-heading">
-        <h1>All Apps</h1>
-        <span class="count-tag" id="count-tag">7 items</span>
-      </div>
+      <div class="status" id="status"></div>
+    </section>
 
-      <div class="grid" id="app-grid">
-        <a class="tile" href="apps/skyward/" data-name="Skyward" data-cat="School Portal">
-          <div class="tile-art" style="background:#171b23;">SK</div>
-          <div class="tile-name">Skyward</div>
-          <div class="tile-cat">School Portal</div>
-        </a>
-
-        <a class="tile" href="apps/classlink/" data-name="ClassLink" data-cat="Single Sign-On">
-          <div class="tile-art" style="background:#2f6fed;">CL</div>
-          <div class="tile-name">Classlink</div>
-          <div class="tile-cat">Single Sign-On</div>
-        </a>
-
-        <a class="tile" href="apps/google-classroom/" data-name="Google Classroom" data-cat="Classroom">
-          <div class="tile-art" style="background:#1f56c9;">GC</div>
-          <div class="tile-name">Google Classroom</div>
-          <div class="tile-cat">Classroom</div>
-        </a>
-
-        <a class="tile" href="apps/blooket/" data-name="Blooket" data-cat="Learning Game">
-          <div class="tile-art" style="background:#5b6474;">BL</div>
-          <div class="tile-name">Blooket</div>
-          <div class="tile-cat">Learning Game</div>
-        </a>
-
-        <a class="tile" href="apps/gimkit/" data-name="Gimkit" data-cat="Learning Game">
-          <div class="tile-art" style="background:#2c3444;">GK</div>
-          <div class="tile-name">Gim-Kit</div>
-          <div class="tile-cat">Learning Game</div>
-        </a>
-
-        <a class="tile" href="apps/kahoot/" data-name="Kahoot" data-cat="Learning Game">
-          <div class="tile-art" style="background:#3f7cf0;">K!</div>
-          <div class="tile-name">Kahoot</div>
-          <div class="tile-cat">Learning Game</div>
-        </a>
-
-        <a class="tile" href="apps/youtube/" data-name="Youtube" data-cat="Video">
-          <div class="tile-art" style="background:#6b7484;">YT</div>
-          <div class="tile-name">Youtube</div>
-          <div class="tile-cat">Video</div>
-        </a>
-      </div>
-
-      <div class="empty-state" id="empty-state" style="display:none;">
-        <div class="big">NO MATCHES</div>
-        <div>Try a different search.</div>
-      </div>
-    </div>
-
-    <div class="rail rail-right">
-      <div class="ad-slot">
-        <div class="tag">SPONSORED</div>
-        <div class="msg">Ad space<br>300 &times; 250</div>
-      </div>
-    </div>
-  </div>
+    <section>
+      <div class="playlist-header">Your library</div>
+      <div id="trackList" style="margin-top:8px;"></div>
+    </section>
+  </main>
 </div>
 
-<script>
-  const input = document.getElementById('search-input');
-  const grid = document.getElementById('app-grid');
-  const empty = document.getElementById('empty-state');
-  const count = document.getElementById('count-tag');
-  const tiles = Array.from(grid.querySelectorAll('.tile'));
+<audio id="audio" preload="metadata"></audio>
 
-  input.addEventListener('input', () => {
-    const q = input.value.trim().toLowerCase();
-    let visible = 0;
-    tiles.forEach(t => {
-      const match = !q || t.dataset.name.toLowerCase().includes(q) || t.dataset.cat.toLowerCase().includes(q);
-      t.style.display = match ? '' : 'none';
-      if(match) visible++;
-    });
-    empty.style.display = visible === 0 ? 'flex' : 'none';
-    count.textContent = visible + (visible === 1 ? ' item' : ' items');
-  });
-</script>
-
+<script src="script.js"></script>
 </body>
 </html>
