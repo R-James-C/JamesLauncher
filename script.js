@@ -25,7 +25,7 @@ const COVERS_FOLDER = "Covers";
 const AUDIO_EXT = "mp3";
 const COVER_EXT = "png";
 
-/* Builds "Music/Lean Thomas/MUTT.mp3" style paths, safely
+/* Builds "Music/Leon Thomas/MUTT.mp3" style paths, safely
    encoding spaces/special characters in folder & file names. */
 function buildPath(folder, artist, title, ext){
   const parts = [folder, artist, `${title}.${ext}`];
@@ -35,6 +35,7 @@ function buildPath(folder, artist, title, ext){
 SONGS.forEach(song => {
   song.src = buildPath(MUSIC_FOLDER, song.artist, song.title, AUDIO_EXT);
   song.cover = buildPath(COVERS_FOLDER, song.artist, song.title, COVER_EXT);
+  song.duration = null;
 });
 
 /* ============================================================
@@ -51,9 +52,13 @@ const durTimeEl = document.getElementById('durTime');
 const volume = document.getElementById('volume');
 const statusEl = document.getElementById('status');
 const trackList = document.getElementById('trackList');
-const heroCover = document.getElementById('heroCover');
-const heroTitle = document.getElementById('heroTitle');
-const heroArtist = document.getElementById('heroArtist');
+const libraryList = document.getElementById('libraryList');
+const headerCover = document.getElementById('headerCover');
+const playlistMeta = document.getElementById('playlistMeta');
+const pbCover = document.getElementById('pbCover');
+const pbTitle = document.getElementById('pbTitle');
+const pbArtist = document.getElementById('pbArtist');
+const bigPlayBtn = document.getElementById('bigPlayBtn');
 
 const ICON_PLAY = '<path d="M8 5v14l11-7z"/>';
 const ICON_PAUSE = '<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>';
@@ -63,18 +68,60 @@ const FALLBACK_COVER = "data:image/svg+xml;utf8," + encodeURIComponent(
 );
 
 let current = 0;
+let statusTimer = null;
 
 function formatTime(s){
-  if(!isFinite(s)) return "0:00";
+  if(!isFinite(s) || s === null) return "--:--";
   const m = Math.floor(s/60);
   const sec = Math.floor(s%60).toString().padStart(2,'0');
   return m + ":" + sec;
 }
 
+function showStatus(msg){
+  statusEl.textContent = msg;
+  statusEl.classList.add('visible');
+  clearTimeout(statusTimer);
+  statusTimer = setTimeout(() => statusEl.classList.remove('visible'), 5000);
+}
+
+function prefetchDurations(){
+  SONGS.forEach((song, i) => {
+    const probe = new Audio();
+    probe.preload = "metadata";
+    probe.addEventListener('loadedmetadata', () => {
+      song.duration = probe.duration;
+      updateDurationCell(i);
+    });
+    probe.src = song.src;
+  });
+}
+
+function updateDurationCell(i){
+  const cell = trackList.querySelector(`[data-dur-index="${i}"]`);
+  if(cell) cell.textContent = formatTime(SONGS[i].duration);
+}
+
+function renderLibrary(){
+  libraryList.innerHTML = "";
+  SONGS.forEach((song, i) => {
+    const item = document.createElement('div');
+    item.className = 'library-item' + (i === current ? ' active' : '');
+    item.onclick = () => loadTrack(i, true);
+    item.innerHTML = `
+      <div class="library-thumb"><img src="${song.cover}" onerror="this.src='${FALLBACK_COVER}'"></div>
+      <div class="library-text">
+        <div class="library-title">${song.title}</div>
+        <div class="library-artist">${song.artist}</div>
+      </div>
+    `;
+    libraryList.appendChild(item);
+  });
+}
+
 function renderList(){
   trackList.innerHTML = "";
   if(SONGS.length === 0){
-    trackList.innerHTML = '<div class="status">No songs yet — add one at the top of script.js.</div>';
+    trackList.innerHTML = '<div class="empty-state">No songs yet — add one at the top of script.js.</div>';
     return;
   }
   SONGS.forEach((song, i) => {
@@ -82,16 +129,29 @@ function renderList(){
     row.className = 'track-row' + (i === current ? ' active' : '');
     row.onclick = () => loadTrack(i, true);
     row.innerHTML = `
-      <div class="track-index">${i+1}</div>
-      <div class="track-thumb"><img src="${song.cover}" onerror="this.src='${FALLBACK_COVER}'"></div>
-      <div class="track-meta">
-        <div class="track-title">${song.title}</div>
-        <div class="track-artist">${song.artist}</div>
+      <div class="track-index">
+        <span class="num">${i+1}</span>
+        <span class="play-glyph"><svg viewBox="0 0 24 24">${ICON_PLAY}</svg></span>
       </div>
-      <div class="track-dur"></div>
+      <div class="track-title-cell">
+        <div class="track-thumb"><img src="${song.cover}" onerror="this.src='${FALLBACK_COVER}'"></div>
+        <div class="track-meta">
+          <div class="track-title">${song.title}</div>
+          <div class="track-subartist">${song.artist}</div>
+        </div>
+      </div>
+      <div class="track-artist-cell">${song.artist}</div>
+      <div class="track-dur" data-dur-index="${i}">${formatTime(song.duration)}</div>
     `;
     trackList.appendChild(row);
   });
+}
+
+function renderHeader(){
+  const count = SONGS.length;
+  playlistMeta.textContent = count === 1 ? "1 song" : `${count} songs`;
+  headerCover.src = SONGS.length ? SONGS[0].cover : FALLBACK_COVER;
+  headerCover.onerror = () => headerCover.src = FALLBACK_COVER;
 }
 
 function loadTrack(i, autoplay){
@@ -99,13 +159,12 @@ function loadTrack(i, autoplay){
   current = (i + SONGS.length) % SONGS.length;
   const song = SONGS[current];
   audio.src = song.src;
-  heroCover.src = song.cover;
-  heroCover.onerror = () => heroCover.src = FALLBACK_COVER;
-  heroTitle.textContent = song.title;
-  heroArtist.textContent = song.artist;
-  statusEl.textContent = "";
-  statusEl.classList.remove('error');
+  pbCover.src = song.cover;
+  pbCover.onerror = () => pbCover.src = FALLBACK_COVER;
+  pbTitle.textContent = song.title;
+  pbArtist.textContent = song.artist;
   renderList();
+  renderLibrary();
   if(autoplay){
     audio.play().catch(()=>{});
   }
@@ -116,12 +175,23 @@ function setPlayingUI(isPlaying){
   icon.outerHTML = isPlaying
     ? `<svg id="playIcon" viewBox="0 0 24 24" fill="currentColor">${ICON_PAUSE}</svg>`
     : `<svg id="playIcon" viewBox="0 0 24 24" fill="currentColor">${ICON_PLAY}</svg>`;
+  const bigIcon = document.getElementById('bigPlayIcon');
+  bigIcon.outerHTML = isPlaying
+    ? `<svg id="bigPlayIcon" viewBox="0 0 24 24" fill="currentColor">${ICON_PAUSE}</svg>`
+    : `<svg id="bigPlayIcon" viewBox="0 0 24 24" fill="currentColor">${ICON_PLAY}</svg>`;
   eq.classList.toggle('playing', isPlaying);
 }
 
 document.getElementById('playBtn').addEventListener('click', () => {
   if(SONGS.length === 0) return;
   if(audio.paused) audio.play().catch(()=>{});
+  else audio.pause();
+});
+
+bigPlayBtn.addEventListener('click', () => {
+  if(SONGS.length === 0) return;
+  if(!audio.src) loadTrack(current, true);
+  else if(audio.paused) audio.play().catch(()=>{});
   else audio.pause();
 });
 
@@ -142,10 +212,7 @@ audio.addEventListener('ended', () => {
 });
 audio.addEventListener('error', () => {
   const song = SONGS[current];
-  statusEl.textContent = song
-    ? `Couldn't load "${song.title}" — check that ${song.src} exists in your repo.`
-    : "Couldn't load this song.";
-  statusEl.classList.add('error');
+  if(song) showStatus(`Couldn't load "${song.title}" — check that ${song.src} exists in your repo.`);
 });
 
 bar.addEventListener('click', (e) => {
@@ -171,5 +238,8 @@ function setTheme(name){
 }
 
 // init
+renderHeader();
+renderLibrary();
 renderList();
+prefetchDurations();
 if(SONGS.length > 0) loadTrack(0, false);
