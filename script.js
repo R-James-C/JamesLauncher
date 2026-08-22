@@ -11,7 +11,7 @@
    and change the title/artist.
    ============================================================ */
 const SONGS = [
-  { title: "MUTT", artist: "Lean Thomas" },
+  { title: "MUTT", artist: "Leon Thomas" },
 
   // { title: "SONG TITLE", artist: "ARTIST NAME" },
 ];
