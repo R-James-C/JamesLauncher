@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="blue">
+<html lang="en" data-mode="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,7 +15,7 @@
     <div class="logo"><span class="dot"></span>sneak.</div>
 
     <div class="nav-section">
-      <div class="nav-item active">Home</div>
+      <div class="nav-item active" id="navHome">Home</div>
       <div class="nav-item">Search</div>
     </div>
 
@@ -24,26 +24,33 @@
       <div id="libraryList" class="library-list"></div>
     </div>
 
+    <div class="nav-section playlists-section">
+      <div class="nav-label">Playlists</div>
+      <div id="playlistNavList" class="playlist-nav-list"></div>
+      <div class="new-playlist-item" onclick="createPlaylistPrompt()">+ New playlist</div>
+    </div>
+
     <div class="nav-section theme-section">
-      <div class="nav-label">Skin</div>
+      <div class="nav-label">Appearance</div>
+      <div class="mode-row">
+        <button class="mode-btn" data-mode="dark" onclick="setMode('dark')">🌙 Dark</button>
+        <button class="mode-btn" data-mode="light" onclick="setMode('light')">☀️ Light</button>
+      </div>
       <div class="theme-row">
-        <button class="theme-swatch selected" data-theme="blue" onclick="setTheme('blue')">
-          <span class="swatch-dots">
-            <span style="background:#0b0f14"></span>
-            <span style="background:#8fa0ab"></span>
-            <span style="background:#2f80ed"></span>
-          </span>
+        <button class="theme-swatch" data-accent="blue" onclick="setAccent('blue')">
+          <span class="swatch-dots"><span style="background:#2f80ed"></span></span>
           <span class="label">Blue</span>
         </button>
-        <button class="theme-swatch" data-theme="orange" onclick="setTheme('orange')">
-          <span class="swatch-dots">
-            <span style="background:#0d0d0d"></span>
-            <span style="background:#ffffff"></span>
-            <span style="background:#ff7a29"></span>
-          </span>
+        <button class="theme-swatch" data-accent="orange" onclick="setAccent('orange')">
+          <span class="swatch-dots"><span style="background:#ff7a29"></span></span>
           <span class="label">Orange</span>
         </button>
+        <button class="theme-swatch" data-accent="custom" onclick="document.getElementById('customColorInput').click()">
+          <span class="swatch-dots"><span id="customDot" style="background:#a259ff"></span></span>
+          <span class="label">Custom</span>
+        </button>
       </div>
+      <input type="color" id="customColorInput" value="#a259ff" style="display:none">
     </div>
   </aside>
 
@@ -52,7 +59,7 @@
       <section class="playlist-header">
         <div class="playlist-cover"><img id="headerCover" src="" alt=""></div>
         <div class="playlist-info">
-          <div class="eyebrow">Playlist</div>
+          <div class="eyebrow" id="playlistEyebrow">Playlist</div>
           <h1 id="playlistTitle">Your Music</h1>
           <div class="playlist-meta" id="playlistMeta">0 songs</div>
         </div>
@@ -62,6 +69,7 @@
         <button class="btn-play-large" id="bigPlayBtn" title="Play">
           <svg id="bigPlayIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
         </button>
+        <button class="btn-delete-playlist" id="deletePlaylistBtn" style="display:none">Delete playlist</button>
       </section>
 
       <section class="track-table">
@@ -70,6 +78,7 @@
           <span class="col-title">Title</span>
           <span class="col-artist">Artist</span>
           <span class="col-dur">Time</span>
+          <span class="col-menu"></span>
         </div>
         <div id="trackList"></div>
       </section>
