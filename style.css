@@ -566,6 +566,88 @@ input[type="range"]::-webkit-slider-thumb{
 }
 .status.visible{ opacity:1; }
 
+/* ---------- NEW PLAYLIST MODAL ---------- */
+.modal-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.55);
+  backdrop-filter:blur(2px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:100;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .18s ease;
+}
+.modal-overlay.visible{ opacity:1; pointer-events:auto; }
+
+.modal{
+  width:min(360px, 90vw);
+  background:var(--bg-elevated);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:26px 24px 22px;
+  box-shadow:0 20px 60px rgba(0,0,0,.45);
+  transform:translateY(8px) scale(.98);
+  transition:transform .18s ease;
+}
+.modal-overlay.visible .modal{ transform:translateY(0) scale(1); }
+
+.modal-icon{
+  width:40px; height:40px;
+  border-radius:50%;
+  background:var(--bg);
+  border:1px solid var(--border);
+  color:var(--accent);
+  display:flex; align-items:center; justify-content:center;
+  margin-bottom:14px;
+}
+.modal-icon svg{ width:20px; height:20px; }
+
+.modal-title{
+  font-family:var(--font-display);
+  font-weight:700;
+  font-size:19px;
+  letter-spacing:-0.01em;
+  color:var(--text-primary);
+  margin-bottom:5px;
+}
+.modal-subtitle{
+  font-size:12.5px;
+  color:var(--text-tertiary);
+  margin-bottom:16px;
+}
+.modal-input{
+  width:100%;
+  background:var(--bg);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:10px 12px;
+  font-size:14px;
+  font-family:var(--font-body);
+  color:var(--text-primary);
+  margin-bottom:20px;
+  transition:border-color .15s ease;
+}
+.modal-input:focus{ outline:none; border-color:var(--accent); }
+.modal-input::placeholder{ color:var(--text-tertiary); }
+
+.modal-actions{ display:flex; justify-content:flex-end; gap:8px; }
+.modal-btn{
+  border:none;
+  border-radius:8px;
+  padding:9px 16px;
+  font-size:13.5px;
+  font-weight:500;
+  cursor:pointer;
+  transition:background .15s ease, opacity .15s ease;
+}
+.modal-btn-cancel{ background:var(--bg-hover); color:var(--text-secondary); }
+.modal-btn-cancel:hover{ color:var(--text-primary); }
+.modal-btn-create{ background:var(--accent); color:var(--bg); }
+.modal-btn-create:hover{ opacity:.9; }
+
 @media (max-width:820px){
   #app{ grid-template-columns:1fr; grid-template-rows:1fr var(--player-h); }
   .sidebar{ display:none; }
